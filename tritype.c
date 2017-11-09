@@ -3,7 +3,7 @@
  * Tests by Combining Static and Dynamic Analysis," with added KLEE
  * harness.
  */
-
+int kappa;
 int tritype(int i, int j, int k){
   int trityp;
   if ((i == 0) || (j == 0) || (k == 0)) trityp = 4;
@@ -27,7 +27,8 @@ int tritype(int i, int j, int k){
 
 int main(int argc, char **argv) {
   int i, j, k;
-
+  kappa = 0;
   tritype(i, j, k);
+  klee_assert(kappa < 3);
   return 0;
 }

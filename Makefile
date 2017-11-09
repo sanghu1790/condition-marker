@@ -19,7 +19,7 @@ clean:
 .SUFFIXES: .bc .ll
 
 .c.bc:
-	${CC} ${CFLAGS} -c -emit-llvm -g $<
+	${CC} ${CFLAGS} -c -emit-llvm -g $< 
 
 .bc.ll:
 	llvm-dis $<
