@@ -13,6 +13,9 @@ TARGETS=markcond ${EXAMPLES}
 
 all: ${TARGETS}
 
+run: all tcas.ll
+	./markcond tcas.ll 2> tcas1.msg 1> tcas1.ll
+
 clean:
 	rm -f ${TARGETS} *.bc *.ll
 
