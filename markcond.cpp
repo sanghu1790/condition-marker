@@ -15,6 +15,7 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/GlobalValue.h"
 #include "llvm/IRReader/IRReader.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/SourceMgr.h"
@@ -30,7 +31,16 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include "llvm-c/TargetMachine.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Constants.h"
 #include "llvm/Bitcode/ReaderWriter.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm-c/BitWriter.h"
+//#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/IR/Module.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/MemoryBuffer.h"
+
 /*
  * Main.
  */
@@ -51,25 +61,22 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  // void print (llvm::raw_ostream &OS, llvm::AssemblyAnnotationWriter
-  // *AAW, bool ShouldPreserveUseListOrder=false, bool IsForDebug=false);
-
-  // Code to open a file and read the truth values for seq.
+  // Code to open a file and read the truth values for sequences created.
   int truthvalue;
   int conditionvalue[52];
   int icmpp[52];
   // char a;
   int i = 0, j = 0;
   string line;
-  ifstream myfile("seq.txt", ios_base::in);
+  ifstream myfile("seq3.txt", ios_base::in);
   // std::fstream myfile("seq.txt", std::ios_base::in);
   if (myfile.is_open()) {
 
     while (myfile.good()) {
       myfile >> truthvalue;
-      icmpp[i] = truthvalue; // Assigning the truth values from the
-      // seq.txt files in an comparision array to
-      // check the truth and false value
+      icmpp[i] = truthvalue; // Assigning the truth values from the seq.txt
+                             // files in an comparison array to check the truth
+                             // and false value
       i++;
     }
 
@@ -82,48 +89,50 @@ int main(int argc, char **argv)
   // int icmpp[17]={false,false,true,9,9,9,9,9,9,9,9,9,9,9,9,9,9};
 
   /*for (auto &F: *M) {
-    for (auto &BB: F) {
-          for (auto &I: BB) {
+for (auto &BB: F) {
+    for (auto &I: BB) {
 
 
-                       if(llvm::isa<llvm::ICmpInst>(I))
-                       {
-                            icmp++;
-           if(icmp==4)
-           {
-                  // Instruction *instruction = cmpInst->getNextNode();
-                   //llvm::CmpInst *cmpInst =
+                 if(llvm::isa<llvm::ICmpInst>(I))
+                 {
+                      icmp++;
+     if(icmp==4)
+     {
+            // Instruction *instruction = cmpInst->getNextNode();
+             //llvm::CmpInst *cmpInst =
 llvm::dyn_cast<llvm::CmpInst>(&I);
-                   //llvm::Instruction *instruction =
+             //llvm::Instruction *instruction =
 cmpInst->llvm::getNextNode();
-                   I.dump();
+             I.dump();
 
-                  // I.dump();
-                   //	 cout << "\n" << I;
-                       llvm::errs() << "\n \n \n" << icmp;
+            // I.dump();
+             //	 cout << "\n" << I;
+                 llvm::errs() << "\n \n \n" << icmp;
 
-           }
-           }
-                      // if(llvm::isa<llvm::BranchInst>(I))
-                       //{
-                          // I.dump();
-                      // }
-
-
+     }
+     }
+                // if(llvm::isa<llvm::BranchInst>(I))
+                 //{
+                    // I.dump();
+                // }
 
 
 
-          }
+
 
     }
+
+}
 }*/
   llvm::GlobalVariable *kappa;
   for (auto &F : *M) {
     for (llvm::Module::global_iterator GI = M->global_begin(),
                                        GE = M->global_end();
          GI != GE; ++GI) {
-      GI->dump();
-      kappa = GI;
+      if (GI->getName() == "kappa") {
+        GI->dump();
+        kappa = GI;
+      }
     }
   }
   for (auto &F : *M) {
@@ -132,14 +141,10 @@ cmpInst->llvm::getNextNode();
            ++ins) {
         if (llvm::isa<llvm::ICmpInst>(ins)) {
           if (icmp < sizeof(icmpp)) {
-            // Instruction *instruction =
-            // cmpInst->getNextNode();
-            // llvm::CmpInst *cmpInst =
-            // llvm::dyn_cast<llvm::CmpInst>(&I);
-            // llvm::Instruction *instruction =
-            // cmpInst->llvm::getNextNode();
+            // Instruction *instruction = cmpInst->getNextNode();
+            // llvm::CmpInst *cmpInst = llvm::dyn_cast<llvm::CmpInst>(&I);
+            // llvm::Instruction *instruction = cmpInst->llvm::getNextNode();
             llvm::errs() << "\n \n" << icmp << "\n \n";
-            ;
             llvm::errs() << *ins << "\n";
             llvm::errs() << icmpp[icmp] << "\n";
 
@@ -151,28 +156,13 @@ cmpInst->llvm::getNextNode();
                 i->dump();
                 if (bi->getNumOperands() == 3) {
 
-                  if (icmpp[icmp] != 9) // 9 is
-                                        // a
-                                        // non-boolean
-                                        // value
-                                        // for
-                                        // any
-                                        // condition
-                                        // (neither
-                                        // true
-                                        // nor
-                                        // false)
+                  if (icmpp[icmp] != 9) // 9 is a non-boolean value for any
+                                        // condition (neither true nor false)
                   {
 
                     if (icmpp[icmp] == 1) {
-                      // llvm::errs()
-                      // <<
-                      // "heloo
-                      // sanghu
-                      // \n "<<
-                      // *bi->getOperand(2)
-                      // << "\n
-                      // \n";
+                      // llvm::errs() << "heloo sanghu \n "<<
+                      // *bi->getOperand(2) << "\n \n";
                       std::string buf;
                       llvm::raw_string_ostream stream(buf);
                       bi->getOperand(2)->print(stream);
@@ -188,12 +178,14 @@ cmpInst->llvm::getNextNode();
                             llvm::IRBuilder<> IR(
                                 llvm::dyn_cast<llvm::BasicBlock>(
                                     bi->getOperand(2)));
+                            /*------Logic to insert Kappa++ instructions in
+                             * destination basic blocks------*/
+                            llvm::BasicBlock *tempblock = b->getNextNode();
+                            IR.SetInsertPoint(tempblock->getFirstInsertionPt());
                             llvm::LoadInst *Load = IR.CreateLoad(kappa);
                             llvm::Value *Inc =
                                 IR.CreateAdd(IR.getInt32(1), Load);
                             llvm::StoreInst *Store = IR.CreateStore(Inc, kappa);
-                            // llvm::errs() << "the value of kappa
-                            // "<<kappa ;
                             bi->getOperand(2)->dump(); // true branch
                           }
                         }
@@ -201,15 +193,6 @@ cmpInst->llvm::getNextNode();
 
                     } else {
 
-                      // llvm::errs()
-                      // <<
-                      // "heloo
-                      // sanghu
-                      // second
-                      // \n "<<
-                      // *bi->getOperand(1)
-                      // << "\n
-                      // \n";
                       std::string buf;
                       llvm::raw_string_ostream stream(buf);
                       bi->getOperand(1)->print(stream);
@@ -222,23 +205,25 @@ cmpInst->llvm::getNextNode();
                           if (s != std::string::npos) {
                             std::string label = buf.substr(0, s);
                             llvm::errs() << "SECOND BRANCH: " << label << "\n";
-
                             llvm::IRBuilder<> IR(
                                 llvm::dyn_cast<llvm::BasicBlock>(
                                     bi->getOperand(1)));
+                            /*------Logic to insert Kappa++ instructions in
+                             * destination basic blocks------*/
+                            llvm::BasicBlock *tempblock1 = b->getNextNode();
+                            IR.SetInsertPoint(
+                                tempblock1->getFirstInsertionPt());
                             llvm::LoadInst *Load = IR.CreateLoad(kappa);
                             llvm::Value *Inc =
                                 IR.CreateAdd(IR.getInt32(1), Load);
                             llvm::StoreInst *Store = IR.CreateStore(Inc, kappa);
-                            // llvm::errs() << "the value of kappa
-                            // "<<kappa ;
                             bi->getOperand(1)->dump(); // false branch
                           }
                         }
                       }
                     }
                   } else {
-                    llvm::errs() << "Entered condition value is dont care\n";
+                    llvm::errs() << "Entered condition value is don't care\n";
                   }
                 }
               }
@@ -272,6 +257,20 @@ cmpInst->llvm::getNextNode();
   //       fclose (stdout);
 
   //		}
+
+  FILE *f = freopen("tcaschange3.ll", "w", stdout);
+  if (f != NULL) {
+    // llvm::WriteBitcodeToFile(M,llvm::outs());
+
+    // M->dump();
+    llvm::outs() << *M;
+    fclose(f);
+  }
+  /*ofstream filepredicate;
+  filepredicate.open ("predicate.txt");
+  //llvm::outs() << *M;
+   M->dump();
+  filepredicate.close();*/
 
   return 0;
 }
