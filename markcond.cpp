@@ -86,44 +86,6 @@ int main(int argc, char **argv)
     cout << "Unable to open file";
 
   int icmp = 0;
-  // int icmpp[17]={false,false,true,9,9,9,9,9,9,9,9,9,9,9,9,9,9};
-
-  /*for (auto &F: *M) {
-for (auto &BB: F) {
-    for (auto &I: BB) {
-
-
-                 if(llvm::isa<llvm::ICmpInst>(I))
-                 {
-                      icmp++;
-     if(icmp==4)
-     {
-            // Instruction *instruction = cmpInst->getNextNode();
-             //llvm::CmpInst *cmpInst =
-llvm::dyn_cast<llvm::CmpInst>(&I);
-             //llvm::Instruction *instruction =
-cmpInst->llvm::getNextNode();
-             I.dump();
-
-            // I.dump();
-             //	 cout << "\n" << I;
-                 llvm::errs() << "\n \n \n" << icmp;
-
-     }
-     }
-                // if(llvm::isa<llvm::BranchInst>(I))
-                 //{
-                    // I.dump();
-                // }
-
-
-
-
-
-    }
-
-}
-}*/
   llvm::GlobalVariable *kappa;
   for (auto &F : *M) {
     for (llvm::Module::global_iterator GI = M->global_begin(),
@@ -258,14 +220,15 @@ cmpInst->llvm::getNextNode();
 
   //		}
 
-  FILE *f = freopen("tcaschange3.ll", "w", stdout);
-  if (f != NULL) {
-    // llvm::WriteBitcodeToFile(M,llvm::outs());
-
-    // M->dump();
+//  FILE *f = freopen("tcaschange3.ll", "w", stdout);
+//  if (f != NULL) {
+//    // llvm::WriteBitcodeToFile(M,llvm::outs());
+//
+//    // M->dump();
     llvm::outs() << *M;
-    fclose(f);
-  }
+//    fflush(f);
+//    fclose(f);
+//  }
   /*ofstream filepredicate;
   filepredicate.open ("predicate.txt");
   //llvm::outs() << *M;
